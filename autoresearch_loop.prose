@@ -1,0 +1,76 @@
+---
+name: autoresearch_loop
+description: BCA anti-fraud victim model autoresearch loop
+---
+
+# Autoresearch Loop for BCA Anti-Fraud Victim Model
+# Driven by OpenProse VM — each iteration spawns a subagent session.
+# Target: F1 >= 0.75
+
+loop until F1 >= 0.75:
+  session: autoresearch_round
+    timeout: 1800s
+    prompt: |
+      You are an anti-fraud feature engineering agent. Your task is ONE iteration of the autoresearch loop.
+      
+      Server: ${REMOTE_HOST} (see .env for credentials)
+      Remote project dir: /home/ubuntu/autoresearch_lgb
+      Local data dir: /home/ubuntu/clawd/autoresearch_data
+
+      CRITICAL RULES:
+      - NEVER modify prepare.py (read-only, chmod 444)
+      - ONLY modify train.py (FEATURES list + engineer_features function)
+      - All SQL must be PIT-compliant: trantime <= current transaction's trantime
+      - Max lookback: 150 days (data truncated beyond this)
+      - Cumulative mode: NEVER delete existing features, only ADD new ones
+      - NEVER add is_unbalance, scale_pos_weight, or class_weight parameters
+      
+      OUTPUT CONTROL (save context):
+      - Redirect all remote command output to files, only bring back exit code + 1-line summary
+      - CORRECT: ssh server "cmd > /tmp/out.log 2>&1; echo EXIT:$?; tail -5 /tmp/out.log"
+      - WRONG: ssh server "cmd" (dumps entire output into context)
+
+      STEPS:
+
+      Step 0: Read reference materials
+      - Use local read tool to read ALL files in /home/ubuntu/clawd/autoresearch_data/references/
+      - These contain anti-fraud feature engineering patterns from other projects
+      - Learn which patterns can be applied to BCA data
+
+      Step 1: Check status and download flows
+      - SSH check: cat results.tsv (last 3 lines only)
+      - scp download missed_account_flows.txt and missed_analysis.txt to local /home/ubuntu/clawd/autoresearch_data/
+      - Use local read tool to read missed_account_flows.txt (FULL file, do NOT truncate)
+      - Use local read tool to read missed_analysis.txt
+
+      Step 2: Analyze transaction flows and design features
+      - Read the FULL missed_account_flows.txt carefully
+      - Identify behavioral patterns in missed (undetected) fraud accounts
+      - Cross-reference with patterns from reference materials
+      - Design new features based on observed patterns
+      - Strategy: combine brute-force enumeration (early rounds) with deep flow analysis (later rounds)
+        * Brute-force: enumerate all tranchan values, amount bins, hour bins as separate features
+        * Deep analysis: lag_in patterns, velocity changes, channel concentration, stranger metrics
+
+      Step 3: Modify train.py
+      - SSH to server, edit train.py on remote
+      - Add new feature names to FEATURES list
+      - Add feature creation SQL/code to engineer_features() function
+      - Use cached_spark_sql() for new SQL features (auto-caches, fast on repeat)
+      - After editing, verify with: ssh server "cd /home/ubuntu/autoresearch_lgb && git diff train.py | head -30"
+      - You MUST add at least 1 new feature per round
+
+      Step 4: Run training
+      - SSH: cd /home/ubuntu/autoresearch_lgb && /home/ubuntu/anaconda3/bin/python3 prepare.py > artifacts/exp_latest.log 2>&1; echo EXIT:$?; tail -5 artifacts/exp_latest.log
+      - Wait for completion (5-15 minutes)
+      - Check result: tail -1 results.tsv
+
+      Step 5: Evaluate and commit
+      - Read the last line of results.tsv for F1 score
+      - Format: n_model_features/n_total_features in notes column
+      - If F1 is new best: git add -A && git commit -m "expN: F1=X.XXXX KEEP description"
+      - If F1 is NOT new best: git add -A && git commit -m "expN: F1=X.XXXX description"
+      - Cumulative mode: always commit, never revert train.py
+      - If F1 improved, also copy train.py to train_best.py as backup
+
+      Return the F1 value as the last line of output.
