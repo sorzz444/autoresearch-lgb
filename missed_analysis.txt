@@ -1,42 +1,42 @@
-=== Missed Analysis (F1=0.6548 Top80) ===
-Hit: 55, Missed: 33, Total Y: 88
+=== Missed Analysis (F1=0.6582 Top70) ===
+Hit: 52, Missed: 36, Total Y: 88
 
 Feature gaps (top 15 by abs gap):
-  f14d_min_gap_out_r38                          hit= 3035.5000  miss=23150.1724  gap=-20114.6724
-  d_amt_div_14d_max                             hit=11453.2018  miss=  302.1567  gap=11151.0451
-  d_7d_out_div_in_r39                           hit= 1702.7740  miss=    4.1036  gap= 1698.6704
-  f150d_all_all_all_nwp2_amt                    hit= 5741.0151  miss= 4276.3432  gap= 1464.6719
-  f150d_out_all_all_all_amt                     hit=10951.7406  miss=12399.8145  gap=-1448.0739
-  f150d_in_max_amt                              hit= 1675.7163  miss= 2560.1262  gap= -884.4099
-  d_amt_div_3d_max_r38                          hit=    7.9918  miss=  340.9841  gap= -332.9923
-  f150d_all_mb_all_nwp2_amt                     hit= 3468.3048  miss= 3257.4872  gap=  210.8176
-  d_ibsme_x_amt_dispersion_r38                  hit=  264.2055  miss=  412.4693  gap= -148.2638
-  f150d_all_all_c03_all_amt                     hit=  232.6470  miss=  100.6281  gap=  132.0189
-  f150d_in_all_all_nhh_amt                      hit=  696.8248  miss=  575.4772  gap=  121.3476
-  f150d_in_std_amt                              hit=  335.3947  miss=  438.2183  gap= -102.8236
-  d_7d_net_flow_r39                             hit= -150.2189  miss=  -84.9657  gap=  -65.2532
-  f150d_all_std_amt                             hit=  177.6814  miss=  238.6804  gap=  -60.9990
-  f14d_all_edcl_c50_nwp2_amt                    hit=   73.5076  miss=   14.6159  gap=   58.8916
+  d_last_bash_in_gap_sec_r44                    hit=1232888.8444  miss=2095026.4667  gap=-862137.6222
+  f14d_min_gap_out_r38                          hit= 3145.2083  miss=21682.5806  gap=-18537.3723
+  d_amt_div_14d_max                             hit=11911.2619  miss=  284.4826  gap=11626.7793
+  d_3d_balance_drain_ratio_r51                  hit= 2608.1813  miss=    0.6207  gap= 2607.5607
+  f150d_all_all_all_nwp2_amt                    hit= 6028.8567  miss= 3982.6280  gap= 2046.2287
+  d_amt_div_3d_inflow_r52                       hit= 1107.7360  miss=   89.6677  gap= 1018.0683
+  f150d_in_max_amt                              hit= 1701.1203  miss= 2473.2971  gap= -772.1768
+  f150d_in_all_all_nhh_amt                      hit=  801.6468  miss=  434.1801  gap=  367.4667
+  f150d_all_mb_all_nwp2_amt                     hit= 3532.6397  miss= 3182.1272  gap=  350.5125
+  d_amt_div_3d_max_r38                          hit=    8.3937  miss=  318.9304  gap= -310.5367
+  d_ibsme_x_amt_dispersion_r38                  hit=  265.1567  miss=  401.4311  gap= -136.2744
+  f150d_in_std_amt                              hit=  339.2434  miss=  426.8445  gap=  -87.6011
+  f14d_all_edcl_c50_nwp2_amt                    hit=   77.3786  miss=   13.9320  gap=   63.4466
+  d_amt_div_max_bash_150d_r41                   hit=    5.3760  miss=   46.4583  gap=  -41.0823
+  d_7d_net_flow_r39                             hit= -113.0395  miss= -144.1070  gap=   31.0675
 
 ============================================================
 Missed samples (for PIT-compliant trace-back):
 注意：宽表里没有trantime。查流水前先从txn_label_tmp1拿trantime！
 
-  tradnum=88800002500#727  cardno=88800002500  stm_dt=2024-12-28  oof=0.1753
-  tradnum=88800002491#590  cardno=88800002491  stm_dt=2024-12-24  oof=0.1574
-  tradnum=88800002516#594  cardno=88800002516  stm_dt=2024-12-31  oof=0.1369
-  tradnum=88800002507#637  cardno=88800002507  stm_dt=2025-01-03  oof=0.1078
-  tradnum=88800002491#614  cardno=88800002491  stm_dt=2024-12-29  oof=0.0734
-  tradnum=88800002502#19  cardno=88800002502  stm_dt=2025-01-04  oof=0.0595
-  tradnum=88800002491#576  cardno=88800002491  stm_dt=2024-12-15  oof=0.055
-  tradnum=88800002494#259  cardno=88800002494  stm_dt=2024-12-09  oof=0.0433
-  tradnum=88800002506#143  cardno=88800002506  stm_dt=2025-01-16  oof=0.0351
-  tradnum=88800002523#367  cardno=88800002523  stm_dt=2025-01-08  oof=0.0212
-  tradnum=88800002504#1036  cardno=88800002504  stm_dt=2025-01-06  oof=0.0201
-  tradnum=88800002531#37  cardno=88800002531  stm_dt=2024-12-01  oof=0.0162
-  tradnum=88800002495#267  cardno=88800002495  stm_dt=2025-01-06  oof=0.0158
-  tradnum=88800002505#616  cardno=88800002505  stm_dt=2024-12-27  oof=0.0137
-  tradnum=88800002518#242  cardno=88800002518  stm_dt=2025-01-07  oof=0.0133
+  tradnum=88800002494#259  cardno=88800002494  stm_dt=2024-12-09  oof=0.2262
+  tradnum=88800002524#368  cardno=88800002524  stm_dt=2024-12-31  oof=0.2166
+  tradnum=88800002492#291  cardno=88800002492  stm_dt=2025-01-08  oof=0.1422
+  tradnum=88800002516#594  cardno=88800002516  stm_dt=2024-12-31  oof=0.1033
+  tradnum=88800002493#1109  cardno=88800002493  stm_dt=2025-01-03  oof=0.0969
+  tradnum=88800002539#2  cardno=88800002539  stm_dt=2024-12-20  oof=0.0817
+  tradnum=88800002504#1036  cardno=88800002504  stm_dt=2025-01-06  oof=0.0653
+  tradnum=88800002500#727  cardno=88800002500  stm_dt=2024-12-28  oof=0.0622
+  tradnum=88800002506#143  cardno=88800002506  stm_dt=2025-01-16  oof=0.0536
+  tradnum=88800002495#267  cardno=88800002495  stm_dt=2025-01-06  oof=0.0429
+  tradnum=88800002502#19  cardno=88800002502  stm_dt=2025-01-04  oof=0.0374
+  tradnum=88800002523#367  cardno=88800002523  stm_dt=2025-01-08  oof=0.0346
+  tradnum=88800002505#616  cardno=88800002505  stm_dt=2024-12-27  oof=0.02
+  tradnum=88800002491#614  cardno=88800002491  stm_dt=2024-12-29  oof=0.0199
+  tradnum=88800002491#602  cardno=88800002491  stm_dt=2024-12-26  oof=0.014
 
 Next step:
   1. SSH到服务器

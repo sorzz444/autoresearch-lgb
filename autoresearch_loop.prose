@@ -24,6 +24,22 @@ loop until F1 >= 0.75:
       - Max lookback: 150 days (data truncated beyond this)
       - Cumulative mode: NEVER delete existing features, only ADD new ones
       - NEVER add is_unbalance, scale_pos_weight, or class_weight parameters
+      - Each round must add at least 20 new features to FEATURES list
+      - If you cannot think of 20 features, go back and re-read missed_account_flows.txt account by account
+
+      GATE_FAIL RECOVERY:
+      If the last result in results.tsv shows "GATE_FAIL: no new features after IV+corr filter",
+      it means ALL your new features from the previous round were filtered out because:
+      - Their IV was < 0.02 (no predictive power), OR
+      - They were >= 0.95 correlated with existing features (redundant)
+      You MUST:
+      1. Go back to Step 1 and re-read missed_account_flows.txt CAREFULLY, account by account
+      2. For each missed account, compare its transaction pattern with hit accounts
+      3. Find behavioral differences that are NOT already captured by existing features
+      4. Develop features from COMPLETELY DIFFERENT angles (not variants of existing ones)
+      5. Think about: timing patterns, counterparty diversity, amount distribution shape,
+         behavioral shifts between periods, channel switching patterns
+      Do NOT just add more count/ratio/proportion features — those are already saturated.
       
       OUTPUT CONTROL (save context):
       - Redirect all remote command output to files, only bring back exit code + 1-line summary
@@ -67,7 +83,7 @@ loop until F1 >= 0.75:
 
       Step 5: Evaluate and commit
       - Read the last line of results.tsv for F1 score
-      - Format: n_model_features/n_total_features in notes column
+      - Notes column format: n_model/n_after_filter/n_total feat (e.g. 69/90/157feat)
       - If F1 is new best: git add -A && git commit -m "expN: F1=X.XXXX KEEP description"
       - If F1 is NOT new best: git add -A && git commit -m "expN: F1=X.XXXX description"
       - Cumulative mode: always commit, never revert train.py

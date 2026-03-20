@@ -653,6 +653,39 @@ def run_once():
     else:
         print(f"  [Corr] No highly correlated pairs found")
 
+    # ---- 2.6 GATE: IV+corr filter must produce at least 1 new feature vs last round ----
+    LAST_KEPT_FILE = "last_kept_after_filter.txt"
+    if exp_id > 1 and os.path.exists(LAST_KEPT_FILE):
+        with open(LAST_KEPT_FILE) as f:
+            prev_kept = set(line.strip() for line in f if line.strip())
+        current_kept = set(kept)
+        new_kept = current_kept - prev_kept
+        if not new_kept:
+            print(f"\n  [GATE FAIL] No new features after IV+correlation filter!")
+            print(f"  Current kept: {len(current_kept)}, Previous kept: {len(prev_kept)}")
+            print(f"  All new features were filtered out by IV<{IV_THRESHOLD} or correlation>={CORR_THRESHOLD}")
+            print(f"  Go back and re-analyze missed account transaction flows.")
+            print(f"  Read missed_account_flows.txt more carefully and develop features with higher IV.")
+            with open(RESULTS_FILE, 'a') as f:
+                f.write(f"{ts}\t{exp_id}\t0\t0\t0\t0\tGATE_FAIL: no new features after IV+corr filter\n")
+            # Still save current kept for next round comparison
+            with open(LAST_KEPT_FILE, 'w') as f:
+                for feat in kept:
+                    f.write(feat + '\n')
+            return 1
+        else:
+            print(f"  [GATE OK] {len(new_kept)} new features survived IV+corr filter: {new_kept}")
+    else:
+        if exp_id > 1:
+            print(f"  [GATE] First run with filter check, skipping comparison")
+
+    # Save current kept list for next round comparison
+    with open(LAST_KEPT_FILE, 'w') as f:
+        for feat in kept:
+            f.write(feat + '\n')
+
+    n_kept_after_filter = len(kept)  # IV+corr filter result count for notes
+
     # ---- 2.8 Pre-screen with fixed params (Top69) ----
     PRE_SCREEN_TOP = 69
     if len(kept) > PRE_SCREEN_TOP:
@@ -710,7 +743,7 @@ def run_once():
         with open(BEST_F1_FILE, 'w') as f:
             f.write(str(f1))
 
-    notes = f"{n_features}/{n_feat_total}feat optuna{OPTUNA_TRIALS} lr={best_params.get('learning_rate',0):.4f}"
+    notes = f"{n_features}/{n_kept_after_filter}/{n_feat_total}feat optuna{OPTUNA_TRIALS} lr={best_params.get('learning_rate',0):.4f}"
     _progress("13.Write Results/Git")
     with open(RESULTS_FILE, 'a') as f:
         f.write(f"{ts}\t{exp_id}\t{f1}\t{best_k}\t{n_features}\t{elapsed}\t{notes}\n")

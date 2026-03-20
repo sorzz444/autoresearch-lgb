@@ -1,0 +1,65 @@
+BCA Project Data Time Range & Window Calculation Rules
+========================================
+
+## Data Range
+
+- Label samples: Dec 2024 + Jan 2025 fraud transactions
+- Flow data start: 2024-07-01 (earliest data in txn_tmp2)
+- Max lookback: 150 days
+- Alignment: even the earliest sample (2024-12-01) can look back 150 days to 2024-07-01
+
+## Two Window Calculation Methods (must follow strictly)
+
+### Short windows (1d/3d/7d/14d) — trantime-based (seconds)
+
+Use trantime from txn_label_tmp1:
+- 1 day: 86,400 seconds
+- 3 days: 259,200 seconds
+- 7 days: 604,800 seconds
+- 14 days: 1,209,600 seconds
+
+SQL template:
+    SELECT t0.tradnum, ...aggregation...
+    FROM fdz.txn_label_tmp1 t0
+    LEFT JOIN fdz.txn_tmp2 t2
+        ON t0.cardno = t2.cardno
+        AND t0.trantime - t2.trantime > 0
+        AND t0.trantime - t2.trantime <= 1209600  -- 14d example
+    GROUP BY t0.tradnum
+
+### Long window (150d) — stm_dt date-based, starting from T-2
+
+To match production deployment:
+- In production, 150d features are batch-computed at T-1, looking back from T-2
+- Training must use the same logic: look back from stm_dt minus 2 days
+- Do NOT use trantime seconds for 150d, otherwise training/production mismatch
+
+SQL template:
+    SELECT t0.tradnum, ...aggregation...
+    FROM fdz.txn_label_tmp1 t0
+    LEFT JOIN fdz.txn_tmp2 t2
+        ON t0.cardno = t2.cardno
+        AND DATEDIFF(t0.stm_dt, t2.stm_dt) >= 2
+        AND DATEDIFF(t0.stm_dt, t2.stm_dt) <= 152  -- T-2 to 150 days back
+    GROUP BY t0.tradnum
+
+Note: if Spark doesn't support DATEDIFF, use trantime approximation with 2-day offset:
+        AND t0.trantime - t2.trantime > 172800       -- > 2 days
+        AND t0.trantime - t2.trantime <= 13132800    -- 152 days = 152 * 86400
+
+## Key Reminders
+
+1. Do NOT develop features with windows > 150 days (insufficient data, will produce nulls)
+2. Short windows (<=14d) and long window (150d) use different join logic, do NOT mix
+3. Existing f150d_ features in the wide table were computed with date-level logic (correct)
+4. New 150d features developed by Todd must use date-level join, not trantime seconds
+
+## Window Quick Reference
+
+| Window | Join Method | Value |
+|--------|------------|-------|
+| 1 day  | trantime seconds | t0.trantime - t2.trantime <= 86,400 |
+| 3 days | trantime seconds | t0.trantime - t2.trantime <= 259,200 |
+| 7 days | trantime seconds | t0.trantime - t2.trantime <= 604,800 |
+| 14 days | trantime seconds | t0.trantime - t2.trantime <= 1,209,600 |
+| 150 days | stm_dt date-level | datediff >= 2 AND datediff <= 152 |
